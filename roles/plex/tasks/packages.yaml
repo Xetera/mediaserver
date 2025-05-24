@@ -1,0 +1,19 @@
+# code: language=ansible
+
+- name: Install packages
+  ansible.builtin.package:
+    name:
+      - nfs-common
+    state: present
+
+- name: Copy lazydocker install script
+  ansible.builtin.copy:
+    src: lazydocker_install.sh
+    dest: /usr/local/bin/lazydocker_install.sh
+    mode: "0755"
+
+- name: Install lazydocker
+  ansible.builtin.command: /usr/local/bin/lazydocker_install.sh
+  environment:
+    DIR: "/usr/local/bin"
+  changed_when: false

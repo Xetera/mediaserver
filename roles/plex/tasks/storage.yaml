@@ -1,0 +1,16 @@
+# code: language=ansible
+- name: Ensure storage directory exists
+  ansible.builtin.file:
+    path: /mnt/storage
+    state: directory
+    owner: "{{ unprivileged_user }}"
+    mode: "0744"
+# - name: Add/Update NFS mount entry in /etc/fstab
+#   ansible.posix.mount:
+#     src: "{{ nfs.server }}:/"
+#     path: /mnt/storage
+#     fstype: nfs4
+#     opts: "{{ nfs.options }}"
+#     state: mounted
+#     dump: "0"
+#     passno: "0"

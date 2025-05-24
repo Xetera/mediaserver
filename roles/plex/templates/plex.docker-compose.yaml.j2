@@ -1,0 +1,74 @@
+# code: language=yaml
+networks:
+  plex:
+    external: true
+
+services:
+  plex:
+    image: lscr.io/linuxserver/plex:1.41.7
+    restart: unless-stopped
+    container_name: plex
+    network_mode: service:wireguard
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: "{{ timezone }}"
+      VERSION: docker
+    volumes:
+      - /mnt/storage/library:/storage:ro
+      - /etc/plex/services/plex:/config
+      # tempfs
+      - /dev/shm:/dev/shm
+    devices:
+      - /dev/dri:/dev/dri
+    healthcheck:
+      test: curl --connect-timeout 15 --silent --show-error --fail http://localhost:32400/identity
+      interval: 1m00s
+      timeout: 15s
+      retries: 3
+      start_period: 1m00s
+  caddy:
+    # needed for cloudflare dns
+    image: ghcr.io/caddybuilds/caddy-cloudflare:2.10.0
+    container_name: caddy
+    restart: unless-stopped
+    network_mode: service:wireguard
+    volumes:
+      - /etc/plex/services/caddy/config:/etc/caddy
+      - /etc/plex/services/caddy/data:/data
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_ADMIN
+      - NET_BIND_SERVICE
+    healthcheck:
+      test: wget -q -O - "http://127.0.0.1:2019/reverse_proxy/upstreams" || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+  wireguard:
+    image: lscr.io/linuxserver/wireguard:1.0.20210914
+    container_name: wireguard
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: "{{ timezone }}"
+    networks:
+      plex:
+      kometa:
+    cap_add:
+      - NET_ADMIN
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+    ports:
+      - 51820:51820/udp
+    volumes:
+      - /etc/plex/services/wireguard:/config
+      - /lib/modules:/lib/modules
+    healthcheck:
+      test: ping -c 1 -W 5 10.0.0.1
+      interval: 1m00s
+      timeout: 15s
+      retries: 3
+      start_period: 1m00s

@@ -1,0 +1,63 @@
+- name: Ensure plex directory exists
+  ansible.builtin.file:
+    path: /etc/plex/services
+    state: directory
+    owner: "{{ unprivileged_user }}"
+    mode: "0744"
+
+- name: Install packages
+  ansible.builtin.include_tasks: packages.yaml
+
+- name: Storage config
+  ansible.builtin.include_tasks: storage.yaml
+
+- name: Enable iGPU
+  ansible.builtin.include_tasks: enable-igpu.yaml
+
+- name: Deploy wireguard config
+  ansible.builtin.include_tasks: wireguard.yaml
+
+- name: Deploy authelia config
+  ansible.builtin.include_tasks: authelia.yaml
+
+- name: Deploy traefik config
+  ansible.builtin.include_tasks: traefik.yaml
+
+- name: Deploy caddy config
+  ansible.builtin.include_tasks: caddy.yaml
+
+- name: Create docker networks
+  ansible.builtin.include_tasks: networking.yaml
+
+- name: Copy docker scripts
+  ansible.builtin.template:
+    src: "{{ item }}"
+    dest: "/usr/local/bin/"
+    mode: "0755"
+  with_fileglob:
+    - "scripts/*"
+
+- name: Deploy Docker Compose files for plex stack
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ unprivileged_user }}"
+    mode: "0644"
+  loop:
+    - src: docker-compose.yaml.j2
+      dest: /etc/plex/docker-compose.yaml
+    - src: plex.docker-compose.yaml.j2
+      dest: /etc/plex/plex.docker-compose.yaml
+    - src: arr.docker-compose.yaml.j2
+      dest: /etc/plex/arr.docker-compose.yaml
+
+- name: Ensure plex stack is running
+  # become: true
+  # become_user: "{{ unprivileged_user }}"
+  community.docker.docker_compose_v2:
+    project_src: /etc/plex
+    remove_orphans: true
+    files:
+      - docker-compose.yaml
+      - plex.docker-compose.yaml
+      - arr.docker-compose.yaml

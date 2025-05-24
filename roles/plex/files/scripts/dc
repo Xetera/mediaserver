@@ -1,0 +1,7 @@
+#!/bin/bash
+
+docker compose \
+  -f /etc/plex/docker-compose.yaml \
+  -f /etc/plex/arr.docker-compose.yaml \
+  -f /etc/plex/plex.docker-compose.yaml \
+  "$@"

@@ -1,0 +1,13 @@
+.ansible
+.env
+.vscode
+vault-password.txt
+inventory.ini
+files/*.pem
+files/*.crt
+files/*.pub
+host_vars/plex.yaml
+host_vars/proxy.yaml
+host_vars/storage.yaml
+roles/plex/templates/_docker-compose.prod.yaml.j2
+group_vars/all.yaml

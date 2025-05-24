@@ -1,0 +1,37 @@
+# code: language=ansible
+- name: Update grub
+  become: true
+  ansible.builtin.command: grub-mkconfig -o /boot/grub/grub.cfg
+
+- name: Log grub changes
+  become: true
+  ansible.builtin.debug:
+    msg: "Grub changed: You need to reboot to apply the changes"
+
+- name: Restart authelia
+  community.docker.docker_compose_v2:
+    project_src: /etc/plex
+    services:
+      - authelia
+    state: restarted
+
+- name: Restart traefik
+  community.docker.docker_compose_v2:
+    project_src: /etc/plex
+    services:
+      - traefik
+    state: restarted
+
+- name: Restart caddy
+  community.docker.docker_compose_v2:
+    project_src: /etc/plex
+    services:
+      - caddy
+    state: restarted
+
+- name: Restart wireguard
+  community.docker.docker_compose_v2:
+    project_src: /etc/plex
+    services:
+      - wireguard
+    state: restarted

@@ -1,0 +1,11 @@
+{
+  email {{ tls.lets_encrypt_email }}
+  acme_dns cloudflare {{ cloudflare.dns_api_token }}
+  # acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
+  http_port 80
+  https_port 443
+}
+
+{{ plex.domain }}:443 {
+  reverse_proxy 127.0.0.1:32400
+}

@@ -1,0 +1,15 @@
+# code: language=ansible
+- name: Deploy watchdog script
+  ansible.builtin.template:
+    src: watchdog.sh.j2
+    dest: /etc/wireguard/scripts/watchdog.sh
+    owner: proxy
+    group: proxy
+    mode: "0700"
+
+- name: Ensure watchdog cron job is present
+  ansible.builtin.cron:
+    name: "WireGuard Watchdog"
+    user: proxy
+    minute: "*/10"
+    job: "/etc/wireguard/scripts/watchdog.sh"

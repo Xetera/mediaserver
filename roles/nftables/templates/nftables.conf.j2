@@ -1,0 +1,15 @@
+flush ruleset
+table inet filter {
+  chain input {
+    type filter hook input priority 0;
+    policy drop;
+
+    iif "lo" accept
+{% for source in nftables.whitelisted_sources %}
+    ip saddr {{ source.saddr }} tcp dport {{ source.dport }} accept
+{% endfor %}
+    icmp type echo-request accept
+    ct state established,related accept
+    tcp dport { {{ nftables.whitelisted_ports | join(', ') }} } accept
+  }
+}

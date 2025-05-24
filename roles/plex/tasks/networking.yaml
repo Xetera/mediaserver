@@ -1,0 +1,18 @@
+# code: language=ansible
+- name: Create docker networks
+  community.docker.docker_network:
+    name: "{{ item }}"
+    driver: bridge
+  loop:
+    - authelia
+    - plex
+    - arr
+    - kopia
+    - kometa
+
+- name: Create IPAM for proxy
+  community.docker.docker_network:
+    name: proxy
+    driver: bridge
+    ipam_config:
+      - subnet: 10.8.0.0/24

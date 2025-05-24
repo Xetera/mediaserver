@@ -1,0 +1,75 @@
+# code: language=yaml
+---
+###############################################################
+#                   Authelia configuration                    #
+###############################################################
+
+server:
+  address: 'tcp://:80'
+  endpoints:
+    authz:
+      forward-auth:
+        implementation: 'ForwardAuth'
+
+log:
+  level: 'debug'
+
+totp:
+  issuer: 'authelia.com'
+
+identity_validation:
+  reset_password:
+    jwt_secret: '{{ authelia.jwt_secret }}'
+
+authentication_backend:
+  file:
+    path: '/config/users_database.yml'
+
+access_control:
+  default_policy: 'deny'
+  rules:
+    # Rules applied to everyone
+{% for domain in domains %}
+    - domain: '{{ domain }}'
+      policy: 'one_factor'
+{% endfor %}
+
+session:
+  # This secret can also be set using the env variables AUTHELIA_SESSION_SECRET_FILE
+  secret: '{{ authelia.session_secret }}'
+
+  cookies:
+    - name: 'authelia_session'
+      domain: '{{ authelia.root_domain }}'  # Should match whatever your root protected domain is
+      authelia_url: "https://{{ authelia.domain }}"
+      expiration: '7 days'
+      inactivity: '5 minutes'
+
+  # redis:
+  #   host: 'redis'
+  #   port: 6379
+  #   # This secret can also be set using the env variables AUTHELIA_SESSION_REDIS_PASSWORD_FILE
+  #   # password: authelia
+
+regulation:
+  max_retries: 3
+  find_time: '2 minutes'
+  ban_time: '5 minutes'
+
+storage:
+  encryption_key: '{{ authelia.encryption_key }}'
+  local:
+    path: '/config/db.sqlite3'
+
+notifier:
+{% if 'smtp' in authelia %}
+  smtp:
+    username: "{{ authelia.smtp.username }}"
+    # This secret can also be set using the env variables AUTHELIA_NOTIFIER_SMTP_PASSWORD_FILE
+    password: "{{ authelia.smtp.password }}"
+    address: "{{ authelia.smtp.address }}"
+    sender: "{{ authelia.smtp.sender }}"
+{% else %}
+  filesystem:
+    filename: "/config/notifier.yaml"
+{% endif %}

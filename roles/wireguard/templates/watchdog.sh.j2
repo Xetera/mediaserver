@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+max_retries=3
+tries=0
+while [[ $tries -lt $max_retries ]]
+do
+  # Ping wireguard vpn gateway
+  if /bin/ping -c 1 {{ wireguard.target.endpoint }}
+  then
+    # Notify that we are online
+    logger -i -t "wg-watchdog" -p user.notice "wireguard online"
+    exit 0
+  fi
+  
+  # Notify that we are offline
+  logger -i -t "wg-watchdog" -p user.notice "wireguard offline"
+  tries=$((tries+1))
+done
+
+# Restart service to reconnect
+sudo systemctl restart wg-quick@wg0
+logger -i -t "wg-watchdog" -p user.notice "wireguard restarted"

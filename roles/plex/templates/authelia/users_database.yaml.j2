@@ -1,0 +1,19 @@
+# yamllint disable rule:line-length
+# code: language=yaml
+# yaml-language-server: $schema=https://www.authelia.com/schemas/latest/json-schema/user-database.json
+---
+###############################################################
+#                         Users Database                      #
+###############################################################
+
+# This file can be used if you do not have an LDAP set up.
+
+users:
+  xetera:
+    disabled: false
+    picture: "{{ authelia.picture }}"
+    displayname: "{{ authelia.displayname }}"
+    password: "{{ authelia.password }}"
+    email: "{{ authelia.email }}"
+    groups:
+      - admins

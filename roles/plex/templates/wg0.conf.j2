@@ -1,0 +1,12 @@
+[Interface]
+PrivateKey = {{ wireguard.private_key }}
+Address = {{ wireguard.subnet }}
+ListenPort = {{ wireguard.port }}
+PostUp = DROUTE=$(ip route | grep default | awk '{print $3}'); DOCKER_NET=172.16.0.0/12; ip route add $DOCKER_NET via $DROUTE;iptables -A OUTPUT -d $DOCKER_NET -j ACCEPT; iptables -A OUTPUT ! -o %i -m mark ! --mark $(wg show %i fwmark) -m addrtype ! --dst-type LOCAL -j REJECT
+PreDown = DROUTE=$(ip route | grep default | awk '{print $3}'); DOCKER_NET=172.16.0.0/12;ip route del $DOCKER_NET via $DROUTE; iptables -D OUTPUT ! -o %i -m mark ! --mark $(wg show %i fwmark) -m addrtype ! --dst-type LOCAL -j REJECT; iptables -D OUTPUT -d $DOCKER_NET -j ACCEPT
+
+[Peer]
+PublicKey = {{ wireguard.target.public_key }}
+AllowedIPs = {{ wireguard.target.allowed_ips }}
+Endpoint = {{ wireguard.target.endpoint }}:{{ wireguard.target.port }}
+PersistentKeepalive = {{ wireguard.target.persistent_keepalive }}

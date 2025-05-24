@@ -1,0 +1,47 @@
+---
+- name: Deploy common tools
+  hosts: all
+  become: true
+  gather_facts: false
+  strategy: free
+  roles:
+    - common
+    - ssh
+    - role: nftables
+      tags:
+        - nftables
+    - role: tailscale
+      tags:
+        - tailscale
+      when: "tailscale_auth_key is defined"
+
+# this is real slow huh
+# - name: Configure cloudflare
+#   hosts:
+#     - proxy
+#     - plex
+#   become: true
+#   gather_facts: false
+#   roles:
+#     - role: cloudflare
+#       tags:
+#         - cloudflare
+
+- name: Configure proxy
+  hosts: proxy
+  become: true
+  gather_facts: false
+  roles:
+    - role: wireguard
+      tags:
+        - wireguard
+
+- name: Deploy plex stack
+  hosts: plex
+  become: true
+  gather_facts: true
+  roles:
+    - role: geerlingguy.docker
+    - role: plex
+      tags:
+        - docker

@@ -1,0 +1,5 @@
+cloudflare:
+  enabled: true
+  zone: mysite.com
+  email: me@mysite.com
+  dns_api_token: "change-me"

@@ -1,0 +1,34 @@
+# code: language=ansible
+
+- name: Create docker group
+  ansible.builtin.group:
+    name: docker
+    state: present
+
+- name: Create unprivileged user
+  ansible.builtin.user:
+    name: "{{ unprivileged_user }}"
+    state: present
+    uid: 1000
+    groups:
+      - sudo
+      - docker
+    shell: /bin/bash
+    append: true
+
+- name: Install important tooling
+  ansible.builtin.apt:
+    pkg:
+      - unattended-upgrades
+      - vim
+      - git
+      - curl
+      - tcpdump
+      - btop
+      - fail2ban
+    update_cache: true
+
+- name: Upgrade all packages
+  ansible.builtin.apt:
+    upgrade: true
+    update_cache: true

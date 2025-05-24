@@ -1,0 +1,7 @@
+- name: Send a Pushover notification
+  ansible.builtin.uri:
+    url: https://api.pushover.net/1/messages.json
+    method: POST
+    body: "token={{ pushover_token }}&user={{ pushover_user }}&message={{ pushover_message }}"
+    body_format: form-urlencoded
+    status_code: 200

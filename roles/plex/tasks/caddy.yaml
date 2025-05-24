@@ -1,0 +1,16 @@
+# code: language=ansible
+- name: Ensure caddy directory exists
+  ansible.builtin.file:
+    path: /etc/plex/services/caddy
+    state: directory
+    owner: "{{ unprivileged_user }}"
+    mode: "0744"
+
+- name: Deploy caddy configuration
+  ansible.builtin.template:
+    src: caddy/Caddyfile.j2
+    dest: /etc/plex/services/caddy/config/Caddyfile
+    owner: "{{ unprivileged_user }}"
+    mode: "0644"
+  notify:
+    - Restart caddy

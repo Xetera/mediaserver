@@ -1,0 +1,37 @@
+# code: language=ansible
+- name: Ensure traefik directory exists
+  ansible.builtin.file:
+    path: /etc/plex/services/traefik/dynamic_config
+    state: directory
+    owner: "{{ unprivileged_user }}"
+    mode: "0744"
+
+- name: Copy mTLS certificate
+  ansible.builtin.copy:
+    src: "{{ tls.mtls.client_certificate_path }}"
+    dest: "/etc/plex/services/traefik/mtls.crt"
+    mode: "0644"
+  when: tls.mtls.enabled
+
+- name: Copy origin certificate
+  ansible.builtin.copy:
+    src: "{{ tls.certificate.certificate_path }}"
+    dest: "/etc/plex/services/traefik/origin.crt"
+    mode: "0644"
+  when: tls.certificate.enabled
+
+- name: Copy origin private key
+  ansible.builtin.copy:
+    src: "{{ tls.certificate.private_key_path }}"
+    dest: "/etc/plex/services/traefik/origin.pem"
+    mode: "0644"
+  when: tls.certificate.enabled
+
+- name: Copy traefik configuration
+  ansible.builtin.template:
+    src: traefik/config.yaml.j2
+    dest: /etc/plex/services/traefik/dynamic_config/traefik.yaml
+    owner: "{{ unprivileged_user }}"
+    group: "{{ unprivileged_user }}"
+    mode: "0644"
+  when: tls.certificate.enabled

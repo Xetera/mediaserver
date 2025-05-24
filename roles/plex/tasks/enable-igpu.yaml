@@ -1,0 +1,28 @@
+# code: language=ansible
+- name: Comment out the line that disables the iGPU
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/modprobe.d/blacklist-hetzner.conf
+    regexp: "{{ item.search }}"
+    line: "{{ item.replace }}"
+    owner: root
+    mode: "0644"
+  loop:
+    - search: "^blacklist i915$"
+      replace: "#blacklist i915"
+    - search: "^blacklist i915_bdw$"
+      replace: "#blacklist i915_bdw"
+  when: using_hetzner
+
+- name: Remove nomodeset from grub
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/default/grub
+    regexp: "^GRUB_CMDLINE_LINUX_DEFAULT="
+    line: "GRUB_CMDLINE_LINUX_DEFAULT=\"consoleblank=0\""
+    owner: root
+    mode: "0644"
+  when: using_hetzner
+  notify:
+    - Update grub
+    - Log grub changes

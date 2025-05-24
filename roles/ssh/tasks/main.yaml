@@ -1,0 +1,33 @@
+- name: Set hostname
+  ansible.builtin.hostname:
+    name: "{{ ssh.host_name }}"
+
+- name: Ensure hostname is in /etc/hosts
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    regexp: '^127\\.0\\.1\\.1\\s+{{ ssh.host_name }}'
+    line: "127.0.1.1   {{ ssh.host_name }}"
+    state: present
+
+- name: Ensure user exists
+  ansible.builtin.user:
+    name: "{{ ssh.user_name }}"
+    state: present
+    shell: /bin/bash
+    groups: sudo
+    append: true
+
+- name: Set up authorized_keys for user
+  ansible.posix.authorized_key:
+    user: "{{ ssh.user_name }}"
+    state: present
+    key: "{{ ssh.public_key_to_add }}"
+
+- name: Copy Secured SSHD Configuration
+  ansible.builtin.copy:
+    src: ssh_config
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: "0644"
+  notify: SSHD Restart

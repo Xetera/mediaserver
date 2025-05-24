@@ -1,0 +1,10 @@
+- name: Add DNS records to Cloudflare
+  community.general.cloudflare_dns:
+    timeout: 20
+    zone: "{{ cloudflare.zone }}"
+    type: "A"
+    record: "{{  item.split('.')[0] if item.split('.') | length > 1 else '@' }}"
+    value: "{{ ansible_host }}"
+    proxied: true
+    api_token: "{{ cloudflare.dns_api_token }}"
+  loop: "{{ domains }}"

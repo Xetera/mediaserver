@@ -1,0 +1,53 @@
+unprivileged_user: plex
+ssh:
+  user_name: plex
+  host_name: plex-host
+  public_key_to_add: "change-me"
+# runs inside docker
+wireguard:
+  port: 51820
+  subnet: "10.0.0.2/24"
+  private_key: "change-me"
+  # proxy
+  target:
+    address: "10.0.0.1"
+    public_key: "change-me"
+    # proxy everything
+    allowed_ips: "0.0.0.0/0"
+    endpoint: "proxy-ip"
+    port: 51820
+    persistent_keepalive: 25
+tailscale_auth_key: "[optional] change-me"
+nftables:
+  whitelisted_ips:
+    - "22"
+    - "80"
+    - "443"
+    # not forwarding plex since it's coming from the proxy
+    - "{{ wireguard.port }}"
+# plex specific configuration
+# optional
+authelia:
+  smtp:
+    address: "smtp://smtp.fastmail.com:465"
+    username: "username"
+    password: "password"
+    sender: "Sender <noreply@example.com>"
+tls:
+  lets_encrypt_email: "change+acme@me.com"
+  # optional. Files are assumed to be discoverable by ansible (eg: no prefixing /files needed)
+  certificate:
+    enabled: false
+    public_key_path: "origin.pub"
+    private_key_path: "origin.pem"
+  # optional
+  mtls:
+    enabled: false
+    # if enabled, traefik will copy this file to the host to do mTLS checks
+    client_certificate_path: "mtls.pem"
+  # optional
+  cloudflare:
+    email: "change@me.com"
+    # required to provision a certificate from letsencrypt for plex
+    dns_api_token: "change-me"
+

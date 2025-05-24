@@ -1,0 +1,225 @@
+# code: language=yaml
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/refs/heads/main/schema/compose-spec.json
+networks:
+  arr:
+    external: true
+  plex:
+    external: true
+  kometa:
+    external: true
+
+services:
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:4.0.14
+    container_name: sonarr
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: "{{ timezone }}"
+    volumes:
+      - /etc/plex/services/sonarr:/config
+      - /mnt/storage:/data
+    restart: always
+    labels:
+      traefik.enable: true
+      traefik.http.routers.sonarr.rule: Host(`{{ sonarr.domain }}`)
+      traefik.http.services.sonarr.loadbalancer.server.port: 8989
+      traefik.http.routers.sonarr.tls: true
+      traefik.http.routers.sonarr.middlewares: "authelia@docker"
+    networks:
+      arr:
+    healthcheck:
+      test: wget http://localhost:8989 -qO /dev/null || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+  radarr:
+    image: lscr.io/linuxserver/radarr:develop
+    container_name: radarr
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: "{{ timezone }}"
+    volumes:
+      - /etc/plex/services/radarr:/config
+      - /mnt/storage:/data
+    restart: always
+    labels:
+      traefik.enable: true
+      traefik.http.routers.radarr.rule: Host(`{{ radarr.domain }}`)
+      traefik.http.services.radarr.loadbalancer.server.port: 7878
+      traefik.http.routers.radarr.tls: true
+      traefik.http.routers.radarr.middlewares: "authelia@docker"
+    networks:
+      arr:
+    healthcheck:
+      test: wget http://localhost:7878 -qO /dev/null || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:1.36.3
+    container_name: prowlarr
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: "{{ timezone }}"
+    volumes:
+      - /etc/plex/services/prowlarr:/config
+    restart: always
+    labels:
+      traefik.enable: true
+      traefik.http.routers.prowlarr.rule: Host(`{{ prowlarr.domain }}`)
+      traefik.http.services.prowlarr.loadbalancer.server.port: 9696
+      traefik.http.routers.prowlarr.tls: true
+      traefik.http.routers.prowlarr.middlewares: "authelia@docker"
+    networks:
+      arr:
+    healthcheck:
+      test: wget http://localhost:9696 -qO /dev/null || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:1.5.2
+    container_name: bazarr
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: "{{ timezone }}"
+    volumes:
+      - /etc/plex/services/bazarr:/config
+      - /mnt/storage:/data:ro
+    restart: always
+    labels:
+      traefik.enable: true
+      traefik.http.routers.bazarr.rule: Host(`{{ bazarr.domain }}`)
+      traefik.http.services.bazarr.loadbalancer.server.port: 6767
+      traefik.http.routers.bazarr.middlewares: authelia@docker
+      traefik.http.routers.bazarr.tls: true
+    networks:
+      arr:
+    healthcheck:
+      test: wget http://localhost:6767/api/v1/status -qO /dev/null || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+  overseerr:
+    image: lscr.io/linuxserver/overseerr:1.34.0
+    container_name: overseerr
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: "{{ timezone }}"
+    volumes:
+      - /etc/plex/services/overseerr:/config
+    restart: unless-stopped
+    networks:
+      arr:
+    labels:
+      traefik.enable: true
+      traefik.http.routers.overseerr.rule: Host(`{{ overseerr.domain }}`)
+      traefik.http.routers.overseerr.tls: true
+      traefik.http.services.overseerr.loadbalancer.server.port: 5055
+    healthcheck:
+      test: wget http://localhost:5055/api/v1/status -qO /dev/null || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+  tdarr:
+    container_name: tdarr
+    image: ghcr.io/haveagitgat/tdarr:2.40.01
+    restart: unless-stopped
+    environment:
+      TZ: "{{ timezone }}"
+      PUID: 1000
+      PGID: 1000
+      UMASK_SET: 002
+      serverIP: 0.0.0.0
+      serverPort: 8266
+      webUIPort: 8265
+      internalNode: true
+      inContainer: true
+      nodeName: node1
+    volumes:
+      - /etc/plex/services/tdarr/server:/app/server
+      - /etc/plex/services/tdarr/configs:/app/configs
+      - /etc/plex/services/tdarr/logs:/app/logs
+      - /mnt/storage/media:/media:ro
+      - /mnt/storage/transcode_cache:/temp
+    devices:
+      - /dev/dri:/dev/dri
+    labels:
+      traefik.enable: true
+      traefik.http.routers.tdarr.rule: Host(`{{ tdarr.domain }}`)
+      traefik.http.services.tdarr.loadbalancer.server.port: 8265
+      traefik.http.routers.tdarr.tls: true
+      traefik.http.routers.tdarr.middlewares: "authelia@docker"
+    networks:
+      arr:
+  wizarr:
+    container_name: wizarr
+    image: ghcr.io/wizarrrr/wizarr:2025.5.1
+    volumes:
+      - /etc/plex/services/wizarr/database:/data/database
+      - /etc/plex/services/wizarr/wizard:/data/wizard_steps
+    environment:
+      TZ: "{{ timezone }}"
+    networks:
+      arr:
+      plex:
+    labels:
+      traefik.enable: true
+      traefik.http.routers.wizarr.rule: Host(`{{ wizarr.domain }}`)
+      traefik.http.routers.wizarr.tls: true
+      traefik.http.services.wizarr.loadbalancer.server.port: 5690
+    restart: always
+    healthcheck:
+      # has to be 127.0.0.1 for whatever reason
+      test: wget http://127.0.0.1:5690 -qO /dev/null || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+  kometa:
+    image: lscr.io/linuxserver/kometa:2.2.0
+    container_name: kometa
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: "{{ timezone }}"
+      KOMETA_CONFIG: /config/config.yml
+      KOMETA_TIME: 03:00
+      KOMETA_RUN: False
+      KOMETA_TEST: False
+      KOMETA_NO_MISSING: False
+    volumes:
+      - /etc/plex/services/kometa:/config
+    restart: unless-stopped
+    networks:
+      kometa:
+  sabnzbd:
+    image: lscr.io/linuxserver/sabnzbd:4.5.1
+    container_name: sabnzbd
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: "{{ timezone }}"
+    volumes:
+      - /etc/plex/services/sabnzbd:/config
+      - /mnt/storage/usenet:/downloads
+      - /tmp/incomplete-downloads:/incomplete-downloads
+    restart: unless-stopped
+    labels:
+      traefik.enable: true
+      traefik.http.routers.sabnzbd.rule: Host(`{{ sabnzbd.domain }}`)
+      traefik.http.services.sabnzbd.loadbalancer.server.port: 8080
+      traefik.http.routers.sabnzbd.tls: true
+      traefik.http.routers.sabnzbd.middlewares: authelia@docker
+    networks:
+      arr:

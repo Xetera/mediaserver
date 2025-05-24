@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+ANSIBLE_INVENTORY_ANY_UNPARSED_IS_FAILED=true ansible-playbook playbook.yaml $@
