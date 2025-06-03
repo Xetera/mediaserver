@@ -1,0 +1,15 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  extends: [
+    "config:recommended",
+    "docker:enableMajor",
+    ":automergeBranch",
+    ":disableRateLimiting",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    ":timezone(Europe/Istanbul)",
+  ],
+  dependencyDashboardTitle: "Renovate Dashboard 🤖",
+  suppressNotifications: ["prEditedNotification", "prIgnoreNotification"],
+  docker: { fileMatch: ["\\.+docker-compose.yaml(\\.j2)?$"] },
+}
