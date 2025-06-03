@@ -131,6 +131,30 @@ services:
       timeout: 5s
       retries: 3
       start_period: 20s
+  tautulli:
+    image: lscr.io/linuxserver/tautulli:2.15.2
+    container_name: tautulli
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: "{{ timezone }}"
+    volumes:
+      - /etc/plex/services/tautulli:/config
+    restart: unless-stopped
+    networks:
+      arr:
+    labels:
+      traefik.enable: true
+      traefik.http.routers.tautulli.rule: Host(`{{ tautulli.domain }}`)
+      traefik.http.services.tautulli.loadbalancer.server.port: 8181
+      traefik.http.routers.tautulli.tls: true
+      traefik.http.routers.tautulli.middlewares: "authelia@docker"
+    healthcheck:
+      test: wget http://127.0.0.1:8181/api/v1/status -qO /dev/null || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
   tdarr:
     container_name: tdarr
     image: ghcr.io/haveagitgat/tdarr:2.42.01
