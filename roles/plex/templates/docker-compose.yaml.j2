@@ -54,7 +54,7 @@ services:
       - 80:80
       - 443:443
   authelia:
-    image: authelia/authelia
+    image: authelia/authelia:4.39
     container_name: authelia
     volumes:
       - /etc/plex/services/authelia:/config

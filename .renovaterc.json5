@@ -11,10 +11,10 @@
   ],
   dependencyDashboardTitle: "Renovate Dashboard 🤖",
   suppressNotifications: ["prEditedNotification", "prIgnoreNotification"],
-  ansible: {
-    managerFilePatterns: ["/(^|/)tasks/[^/]+\\.ya?ml$/"],
-  },
-  docker: {
-    managerFilePatterns: ["/(^|/)(?:docker-)?compose[^/]*\\.ya?ml(\\.j2)?$/"],
+  enabledManagers: ["ansible", "ansible-galaxy", "docker-compose"],
+  "docker-compose": {
+    managerFilePatterns: [
+      "/(^|/)(.+\\.)?(?:docker-)?compose[^/]*\\.ya?ml(\\.j2)?$/",
+    ],
   },
 }
