@@ -9,7 +9,7 @@
 # This file can be used if you do not have an LDAP set up.
 
 users:
-  xetera:
+  "{{ authelia.username }}":
     disabled: false
     picture: "{{ authelia.picture }}"
     displayname: "{{ authelia.displayname }}"

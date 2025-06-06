@@ -18,7 +18,7 @@ services:
       TZ: "{{ timezone }}"
     volumes:
       - /etc/plex/services/sonarr:/config
-      - /mnt/storage:/data
+      - "{{ nfs.target }}:/data"
     restart: always
     labels:
       traefik.enable: true
@@ -43,7 +43,7 @@ services:
       TZ: "{{ timezone }}"
     volumes:
       - /etc/plex/services/radarr:/config
-      - /mnt/storage:/data
+      - "{{ nfs.target }}:/data"
     restart: always
     labels:
       traefik.enable: true
@@ -92,7 +92,7 @@ services:
       TZ: "{{ timezone }}"
     volumes:
       - /etc/plex/services/bazarr:/config
-      - /mnt/storage:/data:ro
+      - /mnt/storage:/data
     restart: always
     labels:
       traefik.enable: true
@@ -102,8 +102,9 @@ services:
       traefik.http.routers.bazarr.tls: true
     networks:
       arr:
+      plex:
     healthcheck:
-      test: wget http://localhost:6767/api/v1/status -qO /dev/null || exit 1
+      test: wget http://127.0.0.1:6767 -qO /dev/null || exit 1
       interval: 10s
       timeout: 5s
       retries: 3
@@ -120,6 +121,7 @@ services:
     restart: unless-stopped
     networks:
       arr:
+      plex:
     labels:
       traefik.enable: true
       traefik.http.routers.overseerr.rule: Host(`{{ overseerr.domain }}`)
@@ -143,6 +145,7 @@ services:
     restart: unless-stopped
     networks:
       arr:
+      plex:
     labels:
       traefik.enable: true
       traefik.http.routers.tautulli.rule: Host(`{{ tautulli.domain }}`)
@@ -155,37 +158,6 @@ services:
       timeout: 5s
       retries: 3
       start_period: 20s
-  tdarr:
-    container_name: tdarr
-    image: ghcr.io/haveagitgat/tdarr:2.42.01
-    restart: unless-stopped
-    environment:
-      TZ: "{{ timezone }}"
-      PUID: 1000
-      PGID: 1000
-      UMASK_SET: 002
-      serverIP: 0.0.0.0
-      serverPort: 8266
-      webUIPort: 8265
-      internalNode: true
-      inContainer: true
-      nodeName: node1
-    volumes:
-      - /etc/plex/services/tdarr/server:/app/server
-      - /etc/plex/services/tdarr/configs:/app/configs
-      - /etc/plex/services/tdarr/logs:/app/logs
-      - /mnt/storage/media:/media:ro
-      - /mnt/storage/transcode_cache:/temp
-    devices:
-      - /dev/dri:/dev/dri
-    labels:
-      traefik.enable: true
-      traefik.http.routers.tdarr.rule: Host(`{{ tdarr.domain }}`)
-      traefik.http.services.tdarr.loadbalancer.server.port: 8265
-      traefik.http.routers.tdarr.tls: true
-      traefik.http.routers.tdarr.middlewares: "authelia@docker"
-    networks:
-      arr:
   wizarr:
     container_name: wizarr
     image: ghcr.io/wizarrrr/wizarr:2025.5.1
@@ -217,33 +189,41 @@ services:
       PUID: 1000
       PGID: 1000
       TZ: "{{ timezone }}"
-      KOMETA_CONFIG: /config/config.yml
+      KOMETA_CONFIG: /config/config.yaml
       KOMETA_TIME: 03:00
-      KOMETA_RUN: False
+      KOMETA_RUN: True
       KOMETA_TEST: False
       KOMETA_NO_MISSING: False
     volumes:
       - /etc/plex/services/kometa:/config
+      - /mnt/storage:/media
     restart: unless-stopped
-    networks:
-      kometa:
-  sabnzbd:
-    image: lscr.io/linuxserver/sabnzbd:4.5.1
-    container_name: sabnzbd
-    environment:
-      PUID: 1000
-      PGID: 1000
-      TZ: "{{ timezone }}"
-    volumes:
-      - /etc/plex/services/sabnzbd:/config
-      - /mnt/storage/usenet:/downloads
-      - /tmp/incomplete-downloads:/incomplete-downloads
-    restart: unless-stopped
-    labels:
-      traefik.enable: true
-      traefik.http.routers.sabnzbd.rule: Host(`{{ sabnzbd.domain }}`)
-      traefik.http.services.sabnzbd.loadbalancer.server.port: 8080
-      traefik.http.routers.sabnzbd.tls: true
-      traefik.http.routers.sabnzbd.middlewares: authelia@docker
     networks:
       arr:
+      kometa:
+  # sabnzbd:
+  #   image: lscr.io/linuxserver/sabnzbd:4.5.1
+  #   container_name: sabnzbd
+  #   environment:
+  #     PUID: 1000
+  #     PGID: 1000
+  #     TZ: "{{ timezone }}"
+  #   volumes:
+  #     - /etc/plex/services/sabnzbd:/config
+  #     - /mnt/storage/usenet:/downloads
+  #     - /mnt/temp_downloads:/temp_downloads
+  #   restart: unless-stopped
+  #   labels:
+  #     traefik.enable: true
+  #     traefik.http.routers.sabnzbd.rule: Host(`{{ sabnzbd.domain }}`)
+  #     traefik.http.services.sabnzbd.loadbalancer.server.port: 8080
+  #     traefik.http.routers.sabnzbd.tls: true
+  #     traefik.http.routers.sabnzbd.middlewares: authelia@docker
+  #   networks:
+  #     arr:
+  #   healthcheck:
+  #     test: wget http://127.0.0.1:8080 -qO /dev/null || exit 1
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 3
+  #     start_period: 20s

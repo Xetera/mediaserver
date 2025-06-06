@@ -5,7 +5,9 @@
   gather_facts: false
   strategy: free
   roles:
-    - common
+    - role: common
+      tags:
+        - common
     - ssh
     - role: nftables
       tags:
@@ -27,6 +29,26 @@
 #       tags:
 #         - cloudflare
 
+- name: Install docker on plex and storage
+  hosts:
+    - plex
+    - storage
+  become: true
+  gather_facts: true
+  roles:
+    - role: geerlingguy.docker
+      tags:
+        - install_docker
+
+- name: Configure docker on storage
+  hosts: storage
+  become: true
+  gather_facts: false
+  roles:
+    - role: storage_docker
+      tags:
+        - storage_docker
+
 - name: Configure proxy
   hosts: proxy
   become: true
@@ -41,7 +63,6 @@
   become: true
   gather_facts: true
   roles:
-    - role: geerlingguy.docker
     - role: plex
       tags:
         - docker

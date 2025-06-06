@@ -3,6 +3,7 @@
     path: /etc/plex/services
     state: directory
     owner: "{{ unprivileged_user }}"
+    group: "1000"
     mode: "0744"
 
 - name: Install packages
@@ -26,6 +27,9 @@
 - name: Deploy caddy config
   ansible.builtin.include_tasks: caddy.yaml
 
+- name: Deploy kometa config
+  ansible.builtin.include_tasks: kometa.yaml
+
 - name: Create docker networks
   ansible.builtin.include_tasks: networking.yaml
 
@@ -36,6 +40,13 @@
     mode: "0755"
   with_fileglob:
     - "scripts/*"
+
+- name: Copy docker daemon config
+  ansible.builtin.copy:
+    src: "daemon.json"
+    dest: "/etc/docker/daemon.json"
+    owner: "root"
+    mode: "0644"
 
 - name: Deploy Docker Compose files for plex stack
   ansible.builtin.template:

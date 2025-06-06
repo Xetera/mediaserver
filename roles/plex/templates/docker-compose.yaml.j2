@@ -53,6 +53,12 @@ services:
     ports:
       - 80:80
       - 443:443
+    healthcheck:
+      test: traefik healthcheck --ping
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
   authelia:
     image: authelia/authelia:4.39
     container_name: authelia
@@ -80,12 +86,14 @@ services:
     restart: unless-stopped
     environment:
       USER: user
+      KOPIA_PASSWORD: "{{ kopia.repository_password }}"
       TZ: "{{ timezone }}"
     volumes:
       - "/etc/plex/services/kopia/config:/app/config"
       - "/etc/plex/services/kopia/cache:/app/cache"
       - "/etc/plex/services/kopia/logs:/app/logs"
       - "/etc/plex/services/kopia/tmp:/tmp:shared"
+      - "/etc/plex/backup_restore:/backup_restore"
     command:
       - server
       - start

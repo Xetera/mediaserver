@@ -1,16 +1,55 @@
 # code: language=ansible
 - name: Ensure storage directory exists
   ansible.builtin.file:
-    path: /mnt/storage
+    path: "{{ item }}"
     state: directory
     owner: "{{ unprivileged_user }}"
+    group: "1000"
     mode: "0744"
-# - name: Add/Update NFS mount entry in /etc/fstab
-#   ansible.posix.mount:
-#     src: "{{ nfs.server }}:/"
-#     path: /mnt/storage
-#     fstype: nfs4
-#     opts: "{{ nfs.options }}"
-#     state: mounted
-#     dump: "0"
-#     passno: "0"
+  loop:
+    - "{{ nfs.target }}"
+    - "/mnt/temp_downloads"
+
+- name: Add/Update NFS mount entry in /etc/fstab
+  ansible.posix.mount:
+    src: "{{ item.src }}"
+    path: "{{ item.path }}"
+    fstype: nfs4
+    opts: "{{ item.opts }}"
+    state: mounted
+    dump: "0"
+    passno: "0"
+  loop:
+    - src: "{{ nfs.server }}:{{ nfs.path }}"
+      path: "{{ nfs.target }}"
+      opts: "{{ nfs.options }}"
+    - src: "{{ nfs.server }}:/temp_downloads"
+      path: "/mnt/temp_downloads"
+      opts: "{{ nfs.options }}"
+
+- name: Ensure storage layout exists
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ unprivileged_user }}"
+    group: "1000"
+    # the execute bit is needed for folder view permissions
+    mode: "0744"
+  loop:
+    - "{{ nfs.target }}/torrents"
+    # usenet
+    - "{{ nfs.target }}/usenet"
+    - "{{ nfs.target }}/usenet/movies"
+    - "{{ nfs.target }}/usenet/tv"
+    # library
+    - "{{ nfs.target }}/library"
+    - "{{ nfs.target }}/library/tv"
+    - "{{ nfs.target }}/library/movies"
+    - "{{ nfs.target }}/library/audiobooks"
+    - "{{ nfs.target }}/library/anime"
+    - "{{ nfs.target }}/library/anime/tv"
+    - "{{ nfs.target }}/library/anime/movies"
+    # turkish
+    - "{{ nfs.target }}/library/turkish"
+    - "{{ nfs.target }}/library/turkish/tv"
+    - "{{ nfs.target }}/library/turkish/movies"

@@ -35,3 +35,10 @@
     services:
       - wireguard
     state: restarted
+
+- name: Restart kometa
+  community.docker.docker_compose_v2:
+    project_src: /etc/plex
+    services:
+      - kometa
+    state: restarted

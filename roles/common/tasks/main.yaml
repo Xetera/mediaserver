@@ -32,3 +32,16 @@
   ansible.builtin.apt:
     upgrade: true
     update_cache: true
+
+- name: Add host mappings to /etc/hosts
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    line: |
+      {{ all_hosts.plex.ip }} {{ all_hosts.plex.name }}
+      {{ all_hosts.storage.ip }} {{ all_hosts.storage.name }}
+    create: true
+    state: present
+    owner: root
+    group: root
+    mode: "0644"
+  when: "ansible_host != 'proxy'"

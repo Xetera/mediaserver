@@ -3,7 +3,7 @@
     timeout: 20
     zone: "{{ cloudflare.zone }}"
     type: "A"
-    record: "{{  item.split('.')[0] if item.split('.') | length > 1 else '@' }}"
+    record: "{{  item.domain.split('.')[0] if item.domain.split('.') | length > 1 else '@' }}"
     value: "{{ ansible_host }}"
     proxied: true
     api_token: "{{ cloudflare.dns_api_token }}"

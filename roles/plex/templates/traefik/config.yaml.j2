@@ -23,11 +23,33 @@ tls:
 
 http:
   services:
+    tdarr:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.100.2:8265"
+    sabnzbd:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.100.2:8080"
     netdata:
       loadBalancer:
         servers:
           - url: "http://host.docker.internal:19999"
   routers:
+    tdarr:
+      rule: Host(`{{ tdarr.domain }}`)
+      service: tdarr
+      middlewares:
+        - authelia@docker
+      tls:
+        options: default
+    sabnzbd:
+      rule: Host(`{{ sabnzbd.domain }}`)
+      service: sabnzbd
+      middlewares:
+        - authelia@docker
+      tls:
+        options: default
     netdata:
       rule: Host(`{{ netdata.domain }}`)
       service: netdata

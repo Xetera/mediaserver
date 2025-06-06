@@ -15,7 +15,7 @@ services:
       TZ: "{{ timezone }}"
       VERSION: docker
     volumes:
-      - /mnt/storage/library:/storage:ro
+      - /mnt/storage/library:/library:ro
       - /etc/plex/services/plex:/config
       # tempfs
       - /dev/shm:/dev/shm

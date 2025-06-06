@@ -30,8 +30,11 @@ access_control:
   rules:
     # Rules applied to everyone
 {% for domain in domains %}
-    - domain: '{{ domain }}'
-      policy: 'one_factor'
+    - domain: '{{ domain.domain }}'
+      policy: '{{ domain.policy | default("one_factor") }}'
+{% if 'resources' in domain %}
+      resources: {{ domain.resources }}
+{% endif %}
 {% endfor %}
 
 session:

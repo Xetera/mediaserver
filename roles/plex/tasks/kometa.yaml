@@ -1,0 +1,6 @@
+- name: Deploy kometa config
+  ansible.builtin.template:
+    src: "kometa/config.yaml.j2"
+    dest: /etc/plex/services/kometa/config.yaml
+    owner: "{{ unprivileged_user }}"
+    mode: "0644"

@@ -1,0 +1,45 @@
+# code: language=yaml
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kometa-team/kometa/nightly/json-schema/config-schema.json
+
+libraries:
+  Movies: &config
+    overlay_files:
+      - default: resolution
+        template_variables:
+          #  don't care about 1080p
+          use_1080p_dvhdrplus: false
+          use_1080p_dvhdr: false
+          use_1080p_plus: false
+          use_1080p_dv: false
+          use_1080p_hdr: false
+          use_1080p: false
+  TV Shows: *config
+  Turkish TV: *config
+  Turkish Movies: *config
+  Anime: *config
+  Anime Movies: *config
+
+tmdb:
+  apikey: "{{ kometa.tmdb_token }}"
+  language: "en"
+
+plex:
+  url: "http://wireguard:32400"
+  token: "{{ plex.token }}"
+
+radarr:
+  url: "http://radarr:7878"
+  token: "{{ radarr.api_key }}"
+  availability: announced
+  root_folder_path: "/media/library/movies"
+  quality_profile: "UHD + 1080p"
+
+sonarr:
+  url: "http://sonarr:8989"
+  token: "{{ sonarr.api_key }}"
+  root_folder_path: "/media/library/tv"
+  quality_profile: "WEB-1080p"
+
+tautulli:
+  url: "http://tautulli:8181"
+  apikey: "{{ tautulli.api_key }}"

@@ -1,0 +1,51 @@
+# code: language=yaml
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/refs/heads/main/schema/compose-spec.json
+services:
+  sabnzbd:
+    image: lscr.io/linuxserver/sabnzbd:4.5.1
+    container_name: sabnzbd
+    # we don't really care for any network separation for storage
+    network_mode: host
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: "{{ timezone }}"
+    volumes:
+      - /etc/storage/services/sabnzbd:/config
+      - /usenet/temp_downloads:/temp_downloads
+      - /mnt/nfs/usenet:/downloads
+    restart: always
+    healthcheck:
+      test: wget http://127.0.0.1:8080 -qO /dev/null || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+  tdarr:
+    container_name: tdarr
+    image: ghcr.io/haveagitgat/tdarr:2.42.01
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: "{{ timezone }}"
+      UMASK_SET: 002
+      serverIP: 192.168.100.2
+      serverPort: 8266
+      webUIPort: 8265
+      internalNode: true
+      inContainer: true
+      nodeName: node1
+    volumes:
+      - /etc/storage/services/tdarr/server:/app/server
+      - /etc/storage/services/tdarr/configs:/app/configs
+      - /etc/storage/services/tdarr/logs:/app/logs
+      - /mnt/nfs/library:/media
+      - /etc/storage/transcode_cache:/temp
+    healthcheck:
+      test: wget http://127.0.0.1:8265 -qO /dev/null || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
