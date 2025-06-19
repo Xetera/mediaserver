@@ -61,6 +61,8 @@
       dest: /etc/plex/plex.docker-compose.yaml
     - src: arr.docker-compose.yaml.j2
       dest: /etc/plex/arr.docker-compose.yaml
+    - src: edgeshark.docker-compose.yaml.j2
+      dest: /etc/plex/edgeshark.docker-compose.yaml
 
 - name: Ensure plex stack is running
   # become: true
@@ -72,3 +74,4 @@
       - docker-compose.yaml
       - plex.docker-compose.yaml
       - arr.docker-compose.yaml
+      - edgeshark.docker-compose.yaml

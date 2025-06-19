@@ -8,6 +8,10 @@ networks:
     external: true
   kopia:
     external: true
+  wizarr:
+    external: true
+  edgeshark:
+    external: true
 
 services:
   traefik:
@@ -41,6 +45,8 @@ services:
       authelia:
       arr:
       kopia:
+      wizarr:
+      edgeshark:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     labels:
@@ -74,6 +80,7 @@ services:
       TZ: "{{ timezone }}"
     labels:
       traefik.enable: true
+      traefik.docker.network: authelia
       traefik.http.routers.authelia.rule: Host(`{{ authelia.domain }}`)
       traefik.http.services.authelia.loadbalancer.server.port: 80
       traefik.http.routers.authelia.tls: true
@@ -107,6 +114,7 @@ services:
       kopia:
     labels:
       traefik.enable: true
+      traefik.docker.network: kopia
       traefik.http.routers.kopia.rule: Host(`{{ kopia.domain }}`)
       traefik.http.services.kopia.loadbalancer.server.port: 51515
       traefik.http.routers.kopia.middlewares: "authelia@docker"

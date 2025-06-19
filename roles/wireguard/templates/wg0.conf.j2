@@ -1,6 +1,6 @@
 [Interface]
 PrivateKey = {{ wireguard.private_key }}
-Address = {{ wireguard.subnet }}
+Address = {{ wireguard.subnet }}, {{ wireguard.subnet_ipv6 }}
 ListenPort = {{ wireguard.port }}
 
 [Peer]

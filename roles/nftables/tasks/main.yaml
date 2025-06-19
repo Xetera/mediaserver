@@ -3,6 +3,18 @@
     name: nftables
     state: present
 
+- name: Ensure nftables service directory exists
+  ansible.builtin.file:
+    path: /etc/systemd/system/nftables.service.d
+    state: directory
+    mode: "0755"
+
+- name: Copy nftables override conf
+  ansible.builtin.copy:
+    src: nftables.override.conf
+    dest: /etc/systemd/system/nftables.service.d/override.conf
+    mode: "0644"
+
 - name: Create nftables rules file
   ansible.builtin.template:
     src: nftables.conf.j2

@@ -9,6 +9,8 @@
     - arr
     - kopia
     - kometa
+    - wizarr
+    - edgeshark
 
 - name: Create IPAM for proxy
   community.docker.docker_network:

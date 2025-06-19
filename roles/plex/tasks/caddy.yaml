@@ -6,6 +6,13 @@
     owner: "{{ unprivileged_user }}"
     mode: "0744"
 
+- name: Copy caddy proxy script
+  ansible.builtin.copy:
+    src: caddy-proxy.sh
+    dest: /etc/plex/services/caddy/config/caddy-proxy.sh
+    owner: "{{ unprivileged_user }}"
+    mode: "0744"
+
 - name: Deploy caddy configuration
   ansible.builtin.template:
     src: caddy/Caddyfile.j2

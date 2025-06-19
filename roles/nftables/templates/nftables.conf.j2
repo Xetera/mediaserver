@@ -1,15 +1,58 @@
-flush ruleset
-table inet filter {
+# this is needed to make sure we don't flush docker's nftables rules
+table inet firewall
+flush table inet firewall
+
+{% if nat.enabled %}
+table inet custom_nat
+table ip custom_nat
+flush table inet custom_nat
+flush table ip custom_nat
+{% endif %}
+
+table inet firewall {
   chain input {
-    type filter hook input priority 0;
-    policy drop;
+    type filter hook input priority 0; policy drop;
+    icmpv6 type {
+      destination-unreachable,
+      packet-too-big,
+      time-exceeded,
+      parameter-problem,
+      echo-request,
+      echo-reply,
+      nd-router-solicit,
+      nd-router-advert,
+      nd-neighbor-solicit,
+      nd-neighbor-advert,
+      redirect
+    } accept
 
     iif "lo" accept
 {% for source in nftables.whitelisted_sources %}
-    ip saddr {{ source.saddr }} tcp dport {{ source.dport }} accept
+    ip saddr {{ source.saddr }} {{ source.protocol }} dport {{ source.dport }} counter accept
 {% endfor %}
-    icmp type echo-request accept
+    icmp type echo-request counter accept
     ct state established,related accept
-    tcp dport { {{ nftables.whitelisted_ports | join(', ') }} } accept
+    tcp dport { {{ nftables.whitelisted_ports | join(', ') }} } counter accept
+    reject
   }
 }
+
+{% if nat.enabled %}
+table inet custom_nat {
+  chain postrouting {
+    type nat hook postrouting priority srcnat; policy accept;
+{% for rule in nat.masquerade %}
+    ip saddr {{ rule.source }} oifname "{{ rule.interface }}" masquerade
+{% endfor %}
+  }
+}
+
+table ip custom_nat {
+  chain prerouting {
+    type nat hook prerouting priority dstnat; policy accept;
+{% for source in nat.dnat %}
+    iifname "{{ source.interface }}" {{ source.protocol }} dport { {{ source.dport | join(', ') }} } dnat to {{ source.destination }}
+{% endfor %}
+  }
+}
+{% endif %}

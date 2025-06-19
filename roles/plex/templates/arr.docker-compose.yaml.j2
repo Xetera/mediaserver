@@ -7,6 +7,8 @@ networks:
     external: true
   kometa:
     external: true
+  wizarr:
+    external: true
 
 services:
   sonarr:
@@ -22,6 +24,7 @@ services:
     restart: always
     labels:
       traefik.enable: true
+      traefik.docker.network: arr
       traefik.http.routers.sonarr.rule: Host(`{{ sonarr.domain }}`)
       traefik.http.services.sonarr.loadbalancer.server.port: 8989
       traefik.http.routers.sonarr.tls: true
@@ -47,6 +50,7 @@ services:
     restart: always
     labels:
       traefik.enable: true
+      traefik.docker.network: arr
       traefik.http.routers.radarr.rule: Host(`{{ radarr.domain }}`)
       traefik.http.services.radarr.loadbalancer.server.port: 7878
       traefik.http.routers.radarr.tls: true
@@ -71,6 +75,7 @@ services:
     restart: always
     labels:
       traefik.enable: true
+      traefik.docker.network: arr
       traefik.http.routers.prowlarr.rule: Host(`{{ prowlarr.domain }}`)
       traefik.http.services.prowlarr.loadbalancer.server.port: 9696
       traefik.http.routers.prowlarr.tls: true
@@ -96,6 +101,7 @@ services:
     restart: always
     labels:
       traefik.enable: true
+      traefik.docker.network: arr
       traefik.http.routers.bazarr.rule: Host(`{{ bazarr.domain }}`)
       traefik.http.services.bazarr.loadbalancer.server.port: 6767
       traefik.http.routers.bazarr.middlewares: authelia@docker
@@ -124,6 +130,7 @@ services:
       plex:
     labels:
       traefik.enable: true
+      traefik.docker.network: arr
       traefik.http.routers.overseerr.rule: Host(`{{ overseerr.domain }}`)
       traefik.http.routers.overseerr.tls: true
       traefik.http.services.overseerr.loadbalancer.server.port: 5055
@@ -148,6 +155,7 @@ services:
       plex:
     labels:
       traefik.enable: true
+      traefik.docker.network: arr
       traefik.http.routers.tautulli.rule: Host(`{{ tautulli.domain }}`)
       traefik.http.services.tautulli.loadbalancer.server.port: 8181
       traefik.http.routers.tautulli.tls: true
@@ -167,10 +175,12 @@ services:
     environment:
       TZ: "{{ timezone }}"
     networks:
+      wizarr:
       arr:
       plex:
     labels:
       traefik.enable: true
+      traefik.docker.network: wizarr
       traefik.http.routers.wizarr.rule: Host(`{{ wizarr.domain }}`)
       traefik.http.routers.wizarr.tls: true
       traefik.http.services.wizarr.loadbalancer.server.port: 5690
@@ -191,8 +201,8 @@ services:
       TZ: "{{ timezone }}"
       KOMETA_CONFIG: /config/config.yaml
       KOMETA_TIME: 03:00
-      KOMETA_RUN: True
-      KOMETA_TEST: False
+      KOMETA_RUN: False
+      KOMETA_NO_REPORT: True
       KOMETA_NO_MISSING: False
     volumes:
       - /etc/plex/services/kometa:/config

@@ -1,10 +1,13 @@
-- name: Enable ipv4 forwarding
+- name: Enable dual stack forwarding
   ansible.posix.sysctl:
-    name: net.ipv4.ip_forward
-    value: '1'
+    name: "{{ item }}"
+    value: "1"
     state: present
     sysctl_set: true
     reload: true
+  loop:
+    - net.ipv4.ip_forward
+    - net.ipv6.conf.all.forwarding
 
 - name: Install WireGuard
   ansible.builtin.apt:
@@ -36,18 +39,26 @@
     enabled: true
     state: started
 
-- name: "DNAT plex port"
-  ansible.builtin.iptables:
-    table: nat
-    chain: PREROUTING
-    protocol: tcp
-    in_interface: eth0
-    destination_port: "{{ item }}"
-    jump: DNAT
-    to_destination: "{{ wireguard.target.address }}:{{ item }}"
-  loop:
-    - 80
-    - 443
+# CHECK NFTABLES INSTEAD
+# - name: "DNAT plex port"
+#   ansible.builtin.iptables:
+#     table: nat
+#     chain: PREROUTING
+#     protocol: "{{ item.protocol }}"
+#     in_interface: eth0
+#     destination_port: "{{ item.port }}"
+#     jump: DNAT
+#     to_destination: "{{ wireguard.target.address }}:{{ item.port }}"
+#   loop:
+#     - port: 80
+#       protocol: tcp
+#     - port: 443
+#       protocol: tcp
+#     # for HTTP/3
+#     - port: 80
+#       protocol: udp
+#     - port: 443
+#       protocol: udp
 
 # Not needed since this conceals the user's real IP
 # and we route all returning traffic through the proxy anyway
@@ -60,13 +71,13 @@
 
 # This rule enables egress from plex back to the internet
 # without it only ingress response traffic is allowed out
-- name: Masquerade outgoing traffic from plex
-  ansible.builtin.iptables:
-    table: nat
-    chain: POSTROUTING
-    source: "{{ wireguard.subnet }}"
-    out_interface: eth0
-    jump: MASQUERADE
+# - name: Masquerade outgoing traffic from plex
+#   ansible.builtin.iptables:
+#     table: nat
+#     chain: POSTROUTING
+#     source: "{{ wireguard.subnet }}"
+#     out_interface: eth0
+#     jump: MASQUERADE
 
 - name: Include watchdog tasks
   ansible.builtin.include_tasks: watchdog.yaml

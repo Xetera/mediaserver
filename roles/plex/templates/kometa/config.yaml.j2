@@ -31,13 +31,13 @@ radarr:
   url: "http://radarr:7878"
   token: "{{ radarr.api_key }}"
   availability: announced
-  root_folder_path: "/media/library/movies"
+  root_folder_path: "/data/library/movies"
   quality_profile: "UHD + 1080p"
 
 sonarr:
   url: "http://sonarr:8989"
   token: "{{ sonarr.api_key }}"
-  root_folder_path: "/media/library/tv"
+  root_folder_path: "/data/library/tv"
   quality_profile: "WEB-1080p"
 
 tautulli:

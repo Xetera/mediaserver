@@ -6,6 +6,15 @@
   https_port 443
 }
 
+{{ plex.domain }}:80 {
+  redir https://{{ plex.domain }}{uri}
+}
+
 {{ plex.domain }}:443 {
-  reverse_proxy 127.0.0.1:32400
+  reverse_proxy 10.8.0.2:32400 {
+    header_up X-Forwarded-Proto {scheme}
+    header_up X-Real-IP {remote_host}
+    header_up X-Forwarded-For {remote_host}
+    header_up Host {host}
+  }
 }

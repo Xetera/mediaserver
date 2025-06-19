@@ -28,6 +28,8 @@
     services:
       - caddy
     state: restarted
+    files:
+      - plex.docker-compose.yaml
 
 - name: Restart wireguard
   community.docker.docker_compose_v2:
@@ -35,6 +37,8 @@
     services:
       - wireguard
     state: restarted
+    files:
+      - plex.docker-compose.yaml
 
 - name: Restart kometa
   community.docker.docker_compose_v2:
@@ -42,3 +46,5 @@
     services:
       - kometa
     state: restarted
+    files:
+      - arr.docker-compose.yaml

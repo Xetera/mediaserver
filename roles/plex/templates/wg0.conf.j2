@@ -1,9 +1,10 @@
 [Interface]
 PrivateKey = {{ wireguard.private_key }}
-Address = {{ wireguard.subnet }}
+Address = {{ wireguard.subnet }}, {{ wireguard.subnet_ipv6 }}
 ListenPort = {{ wireguard.port }}
-PostUp = DROUTE=$(ip route | grep default | awk '{print $3}'); DOCKER_NET=172.16.0.0/12; ip route add $DOCKER_NET via $DROUTE;iptables -A OUTPUT -d $DOCKER_NET -j ACCEPT; iptables -A OUTPUT ! -o %i -m mark ! --mark $(wg show %i fwmark) -m addrtype ! --dst-type LOCAL -j REJECT
-PreDown = DROUTE=$(ip route | grep default | awk '{print $3}'); DOCKER_NET=172.16.0.0/12;ip route del $DOCKER_NET via $DROUTE; iptables -D OUTPUT ! -o %i -m mark ! --mark $(wg show %i fwmark) -m addrtype ! --dst-type LOCAL -j REJECT; iptables -D OUTPUT -d $DOCKER_NET -j ACCEPT
+PostUp = iptables -t nat -A PREROUTING -p tcp --dport 443 -j DNAT --to-destination 10.8.0.3:443; iptables -t nat -A POSTROUTING -d 10.8.0.3 -p tcp --dport 443 -j MASQUERADE; iptables -t nat -A PREROUTING -p udp --dport 443 -j DNAT --to-destination 10.8.0.3:443; iptables -t nat -A POSTROUTING -d 10.8.0.3 -p udp --dport 443 -j MASQUERADE; iptables -t nat -A PREROUTING -p tcp --dport 80 -j DNAT --to-destination 10.8.0.3:80; iptables -t nat -A POSTROUTING -d 10.8.0.3 -p tcp --dport 80 -j MASQUERADE
+
+PreDown = iptables -t nat -D PREROUTING -p tcp --dport 443 -j DNAT --to-destination 10.8.0.3:443; iptables -t nat -D POSTROUTING -d 10.8.0.3 -p tcp --dport 443 -j MASQUERADE; iptables -t nat -D PREROUTING -p udp --dport 443 -j DNAT --to-destination 10.8.0.3:443; iptables -t nat -D POSTROUTING -d 10.8.0.3 -p udp --dport 443 -j MASQUERADE; iptables -t nat -D PREROUTING -p tcp --dport 80 -j DNAT --to-destination 10.8.0.3:80; iptables -t nat -D POSTROUTING -d 10.8.0.3 -p tcp --dport 80 -j MASQUERADE
 
 [Peer]
 PublicKey = {{ wireguard.target.public_key }}

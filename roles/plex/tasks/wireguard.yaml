@@ -8,7 +8,7 @@
 
 - name: Ensure wireguard directory exists
   ansible.builtin.file:
-    path: /etc/plex/wireguard/wg_confs
+    path: /etc/plex/services/wireguard/wg_confs
     state: directory
     owner: "{{ unprivileged_user }}"
     mode: "0700"
@@ -16,6 +16,7 @@
 - name: Ensure wireguard config file exists
   ansible.builtin.template:
     src: wg0.conf.j2
-    dest: /etc/plex/wireguard/wg_confs/wg0.conf
+    dest: /etc/plex/services/wireguard/wg_confs/wg0.conf
     owner: "{{ unprivileged_user }}"
     mode: "0600"
+  notify: Restart wireguard
