@@ -2,7 +2,7 @@
 
 WIP
 
-![](./assets/diagram.png)
+![](./assets/architecture.png)
 
 Usage
 
