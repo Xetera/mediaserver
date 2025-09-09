@@ -187,7 +187,7 @@ services:
     restart: always
     healthcheck:
       # has to be 127.0.0.1 for whatever reason
-      test: wget http://127.0.0.1:5690 -qO /dev/null || exit 1
+      test: wget http://127.0.0.1:5690/health -qO /dev/null || exit 1
       interval: 10s
       timeout: 5s
       retries: 3
