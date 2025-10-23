@@ -11,3 +11,14 @@ host_vars/proxy.yaml
 host_vars/storage.yaml
 roles/plex/templates/_docker-compose.prod.yaml.j2
 group_vars/all.yaml
+
+# Devenv
+.devenv*
+devenv.local.nix
+devenv.local.yaml
+
+# direnv
+.direnv
+
+# pre-commit
+.pre-commit-config.yaml

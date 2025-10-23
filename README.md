@@ -1,7 +1,5 @@
 # Mediaserver
 
-WIP
-
 ![](./assets/architecture.png)
 
 Usage
@@ -12,8 +10,8 @@ copy `inventory.example.ini` to `inventory.ini`
 
 edit `inventory.ini` to include your hosts
 
-install ansible collections and roles:
+install [`devenv`](https://devenv.sh/getting-started/)
 
-`ansible-galaxy collection install -r requirements.yaml`
+`$ install`
 
-`./run.sh`
+`$ run`
