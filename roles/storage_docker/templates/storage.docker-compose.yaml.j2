@@ -27,7 +27,7 @@ services:
       - /mnt/nfs/torrents:/downloads
     restart: always
   sabnzbd:
-    image: lscr.io/linuxserver/sabnzbd:4.5.4
+    image: lscr.io/linuxserver/sabnzbd:4.5.5
     container_name: sabnzbd
     # we don't really care for any network separation for storage
     network_mode: host
