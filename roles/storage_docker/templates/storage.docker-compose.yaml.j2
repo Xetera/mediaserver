@@ -1,6 +1,31 @@
 # code: language=yaml
 # yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/refs/heads/main/schema/compose-spec.json
 services:
+  qui:
+    image: ghcr.io/autobrr/qui:v1.6.1
+    container_name: qui
+    network_mode: host
+    environment:
+      QUI__HOST: 192.168.100.2
+      QUI__PORT: 7476
+      QUI__METRICS: "true"
+    volumes:
+      - /etc/storage/services/qui:/config
+    restart: always
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:5.1.2
+    container_name: qbittorrent
+    network_mode: host
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: "{{ timezone }}"
+      WEBUI_PORT: "{{ qbittorrent.webui_port }}"
+      TORRENTING_PORT: "{{ qbittorrent.torrenting_port }}"
+    volumes:
+      - /etc/storage/services/qbittorrent:/config
+      - /mnt/nfs/torrents:/downloads
+    restart: always
   sabnzbd:
     image: lscr.io/linuxserver/sabnzbd:4.5.4
     container_name: sabnzbd
