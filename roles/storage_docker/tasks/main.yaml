@@ -10,12 +10,21 @@
     - /usenet/downloads
     - /etc/storage/services
     - /etc/storage/services/sabnzbd
+    - /etc/storage/services/qbittorrent
+    - /etc/storage/services/qui
 
 - name: Ensure dc script exists
   ansible.builtin.copy:
     src: dc
     dest: /usr/local/bin/dc
     mode: "0755"
+
+- name: Deploy qBittorrent.conf file
+  ansible.builtin.template:
+    src: qBittorrent.conf
+    dest: /etc/storage/services/qbittorrent/qBittorrent.conf
+    owner: "{{ unprivileged_user }}"
+    mode: "0644"
 
 - name: Deploy Docker Compose files for storage
   ansible.builtin.template:
