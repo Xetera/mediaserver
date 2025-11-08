@@ -11,6 +11,8 @@
     - kometa
     - wizarr
     - edgeshark
+    - ghost-in-da-box
+    - gostwire_default
 
 - name: Create IPAM for proxy
   community.docker.docker_network:
