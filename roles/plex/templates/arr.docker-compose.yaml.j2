@@ -9,6 +9,8 @@ networks:
     external: true
   wizarr:
     external: true
+  tunarr:
+    external: true
 
 services:
   sonarr:
@@ -211,29 +213,30 @@ services:
     networks:
       arr:
       kometa:
-  # sabnzbd:
-  #   image: lscr.io/linuxserver/sabnzbd:4.5.1
-  #   container_name: sabnzbd
-  #   environment:
-  #     PUID: 1000
-  #     PGID: 1000
-  #     TZ: "{{ timezone }}"
-  #   volumes:
-  #     - /etc/plex/services/sabnzbd:/config
-  #     - /mnt/storage/usenet:/downloads
-  #     - /mnt/temp_downloads:/temp_downloads
-  #   restart: unless-stopped
-  #   labels:
-  #     traefik.enable: true
-  #     traefik.http.routers.sabnzbd.rule: Host(`{{ sabnzbd.domain }}`)
-  #     traefik.http.services.sabnzbd.loadbalancer.server.port: 8080
-  #     traefik.http.routers.sabnzbd.tls: true
-  #     traefik.http.routers.sabnzbd.middlewares: authelia@docker
-  #   networks:
-  #     arr:
-  #   healthcheck:
-  #     test: wget http://127.0.0.1:8080 -qO /dev/null || exit 1
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 3
-  #     start_period: 20s
+  tunarr:
+    image: ghcr.io/chrisbenincasa/tunarr:0.22.12
+    container_name: tunarr
+    environment:
+      TZ: "{{ timezone }}"
+      TUNARR_SERVER_PRINT_ROUTES: "true"
+    labels:
+      traefik.enable: true
+      traefik.docker.network: tunarr
+      traefik.http.routers.tunarr.rule: Host(`{{ tunarr.domain }}`)
+      traefik.http.services.tunarr.loadbalancer.server.port: 8000
+      traefik.http.routers.tunarr.tls: true
+      traefik.http.routers.tunarr.middlewares: authelia@docker
+      traefik.udp.routers.tunarr.entrypoints: tunarr
+      traefik.udp.routers.tunarr.service: tunarr
+      traefik.udp.services.tunarr.loadbalancer.server.port: 1900
+    volumes:
+      - /etc/plex/services/tunarr/config:/config/tunarr
+      - /etc/plex/services/.dizquetv:/.dizquetv
+    devices:
+      - /dev/dri:/dev/dri
+    networks:
+      tunarr:
+      plex:
+    restart: unless-stopped
+    healthcheck:
+      test: curl -L http://127.0.0.1:8000/web -o /dev/null || exit 1
