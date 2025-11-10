@@ -11,6 +11,8 @@ networks:
     external: true
   tunarr:
     external: true
+  tautulli:
+    external: true
 
 services:
   sonarr:
@@ -128,8 +130,8 @@ services:
       - /etc/plex/services/overseerr:/config
     restart: unless-stopped
     networks:
-      arr:
       plex:
+      arr:
     labels:
       traefik.enable: true
       traefik.docker.network: arr
@@ -178,15 +180,16 @@ services:
       - /etc/plex/services/tautulli:/config
     restart: unless-stopped
     networks:
+      tautulli:
       arr:
       plex:
     labels:
       traefik.enable: true
-      traefik.docker.network: arr
+      traefik.docker.network: tautulli
       traefik.http.routers.tautulli.rule: Host(`{{ tautulli.domain }}`)
       traefik.http.services.tautulli.loadbalancer.server.port: 8181
       traefik.http.routers.tautulli.tls: true
-      traefik.http.routers.tautulli.middlewares: "authelia@docker"
+      # traefik.http.routers.tautulli.middlewares: "authelia@docker"
     healthcheck:
       test: wget http://127.0.0.1:8181/api/v1/status -qO /dev/null || exit 1
       interval: 10s

@@ -12,6 +12,8 @@ networks:
     external: true
   edgeshark:
     external: true
+  tautulli:
+    external: true
   tunarr:
     external: true
 
@@ -45,6 +47,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /etc/plex/services/traefik:/etc/traefik
     networks:
+      tautulli:
       authelia:
       arr:
       kopia:
