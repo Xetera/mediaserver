@@ -1,0 +1,29 @@
+- name: Ensure systemd-resolved is installed
+  apt:
+    name: systemd-resolved
+    state: present
+    update_cache: yes
+
+- name: Configure resolved.conf for DoT
+  ini_file:
+    path: /etc/systemd/resolved.conf
+    section: Resolve
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+    backup: yes
+  loop:
+    - {
+        option: "DNS",
+        value: "1.1.1.1#cloudflare-dns.com 1.0.0.1#cloudflare-dns.com",
+      }
+    - { option: "FallbackDNS", value: "9.9.9.9#dns.quad9.net" }
+    - { option: "DNSStubListener", value: "no" }
+    - { option: "DNSSEC", value: "yes" }
+    - { option: "DNSOverTLS", value: "yes" }
+  notify: restart systemd-resolved
+
+- name: Ensure systemd-resolved is enabled and running
+  systemd:
+    name: systemd-resolved
+    enabled: yes
+    state: started

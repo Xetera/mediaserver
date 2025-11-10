@@ -45,3 +45,6 @@
     group: root
     mode: "0644"
   when: "ansible_host != 'proxy'"
+
+- name: Configure DNS
+  ansible.builtin.include_tasks: dot.yaml
