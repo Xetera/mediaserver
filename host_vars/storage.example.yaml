@@ -17,6 +17,9 @@ qbittorrent:
   torrenting_port: 6881
   password_hash: "@ByteArray(usernamehash:passwordhash)"
   upload_limit_kb: 512000
+qui:
+  host: "192.168.100.2"
+  port: 7476
 tailscale_auth_key: "tskey-auth-..."
 nftables:
   whitelisted_sources:

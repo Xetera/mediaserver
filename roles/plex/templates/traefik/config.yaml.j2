@@ -26,15 +26,15 @@ http:
     qui:
       loadBalancer:
         servers:
-          - url: "http://192.168.100.2:7476"
+          - url: "http://{{ storage.ip }}:7476"
     tdarr:
       loadBalancer:
         servers:
-          - url: "http://192.168.100.2:8265"
+          - url: "http://{{ storage.ip }}:8265"
     sabnzbd:
       loadBalancer:
         servers:
-          - url: "http://192.168.100.2:8080"
+          - url: "http://{{ storage.ip }}:8080"
     netdata:
       loadBalancer:
         servers:

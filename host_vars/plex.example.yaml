@@ -18,6 +18,8 @@ wireguard:
     port: 51820
     persistent_keepalive: 25
 tailscale_auth_key: "[optional] change-me"
+storage:
+  ip: "192.168.100.2"
 nftables:
   whitelisted_ips:
     - "22"
@@ -50,4 +52,3 @@ tls:
     email: "change@me.com"
     # required to provision a certificate from letsencrypt for plex
     dns_api_token: "change-me"
-

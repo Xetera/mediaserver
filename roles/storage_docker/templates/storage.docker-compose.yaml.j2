@@ -6,14 +6,14 @@ services:
     container_name: qui
     network_mode: host
     environment:
-      QUI__HOST: 192.168.100.2
-      QUI__PORT: 7476
+      QUI__HOST: "{{ qui.host }}"
+      QUI__PORT: "{{ qui.port }}"
       QUI__METRICS: "true"
     volumes:
       - /etc/storage/services/qui:/config
     restart: always
     healthcheck:
-      test: wget http://192.168.100.2:7476 -qO /dev/null || exit 1
+      test: wget http://{{ qui.host }}:{{ qui.port }} -qO /dev/null || exit 1
       interval: 10s
       timeout: 5s
       retries: 3
