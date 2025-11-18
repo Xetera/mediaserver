@@ -12,6 +12,12 @@ services:
     volumes:
       - /etc/storage/services/qui:/config
     restart: always
+    healthcheck:
+      test: wget http://192.168.100.2:7476 -qO /dev/null || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:5.1.2
     container_name: qbittorrent

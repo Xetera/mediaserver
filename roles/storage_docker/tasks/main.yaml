@@ -25,6 +25,7 @@
     dest: /etc/storage/services/qbittorrent/qBittorrent.conf
     owner: "{{ unprivileged_user }}"
     mode: "0644"
+  notify: Restart qBittorrent
 
 - name: Deploy Docker Compose files for storage
   ansible.builtin.template:

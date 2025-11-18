@@ -1,0 +1,6 @@
+- name: Restart qBittorrent
+  community.docker.docker_compose_v2:
+    project_src: /etc/storage
+    services:
+      - qbittorrent
+    state: restarted
