@@ -30,7 +30,7 @@ services:
       TORRENTING_PORT: "{{ qbittorrent.torrenting_port }}"
     volumes:
       - /etc/storage/services/qbittorrent:/config
-      - /mnt/nfs/torrents:/downloads
+      - /mnt/nfs/torrents:/torrent-downloads
     restart: always
   sabnzbd:
     image: lscr.io/linuxserver/sabnzbd:4.5.5
@@ -44,7 +44,7 @@ services:
     volumes:
       - /etc/storage/services/sabnzbd:/config
       - /usenet/temp_downloads:/temp_downloads
-      - /mnt/nfs/usenet:/downloads
+      - /mnt/nfs/usenet:/usenet-downloads
     restart: always
     healthcheck:
       test: wget http://127.0.0.1:8080 -qO /dev/null || exit 1

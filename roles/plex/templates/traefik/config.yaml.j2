@@ -27,6 +27,10 @@ http:
       loadBalancer:
         servers:
           - url: "http://{{ storage.ip }}:7476"
+    qbittorrent:
+      loadBalancer:
+        servers:
+          - url: "http://{{ storage.ip }}:8081"
     tdarr:
       loadBalancer:
         servers:
@@ -41,8 +45,15 @@ http:
           - url: "http://host.docker.internal:19999"
   routers:
     qui:
-      rule: Host(`{{ qbittorrent.domain }}`)
+      rule: Host(`{{ qui.domain }}`)
       service: qui
+      middlewares:
+        - authelia@docker
+      tls:
+        options: default
+    qbittorrent:
+      rule: Host(`{{ qbittorrent.domain }}`)
+      service: qbittorrent
       middlewares:
         - authelia@docker
       tls:
