@@ -269,3 +269,14 @@ services:
     restart: unless-stopped
     healthcheck:
       test: curl -L http://127.0.0.1:8000/web -o /dev/null || exit 1
+  plexautolanguages:
+    image: remirigal/plex-auto-languages:v1.2.3
+    environment:
+      PLEX_URL: "http://wireguard:32400"
+      PLEX_TOKEN: "{{ plex.token }}"
+      TZ: "{{ timezone }}"
+    networks:
+      arr:
+      plex:
+    volumes:
+      - /etc/plex/services/plexautolanguages:/config
