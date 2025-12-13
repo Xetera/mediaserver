@@ -279,3 +279,15 @@ services:
       plex:
     volumes:
       - /etc/plex/services/plexautolanguages:/config
+  plexanisync:
+    image: rickdb/plexanisync:1.4
+    environment:
+      PLEX_SECTION: "Anime"
+      PLEX_URL: "{{ plex.internal_url }}"
+      PLEX_TOKEN: "{{ plex.token }}"
+      ANI_USERNAME: "{{ anisync.users[0].username }}"
+      ANI_TOKEN: "{{ anisync.users[0].token }}"
+    networks:
+      plex:
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
