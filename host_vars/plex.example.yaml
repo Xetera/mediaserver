@@ -27,6 +27,46 @@ nftables:
     - "443"
     # not forwarding plex since it's coming from the proxy
     - "{{ wireguard.port }}"
+sonarr:
+  domain: "sonarr.example.com"
+  api_key: "..."
+radarr:
+  domain: "radarr.example.com"
+  api_key: "..."
+prowlarr:
+  domain: "prowlarr.example.com"
+traefik:
+  domain: "traefik.example.com"
+tautulli:
+  domain: "tautulli.example.com"
+  api_key: "..."
+sabnzbd:
+  domain: "sabnzbd.example.com"
+overseerr:
+  domain: "overseerr.example.com"
+seerr:
+  domain: "seerr.example.com"
+bazarr:
+  domain: "bazarr.example.com"
+wizarr:
+  domain: "wizarr.example.com"
+kopia:
+  domain: "backup.example.com"
+  repository_password: "..."
+tdarr:
+  domain: "tdarr.example.com"
+qui:
+  domain: "qbittorrent.example.com"
+qbittorrent:
+  domain: "qbittorrent-core.example.com"
+plex:
+  internal_url: "http://wireguard:32400"
+  domain: "plex.example.com"
+  token: "..."
+netdata:
+  domain: "netdata.example.com"
+tunarr:
+  domain: "tv.example.com"
 # plex specific configuration
 # optional
 authelia:
