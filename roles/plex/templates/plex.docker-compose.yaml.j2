@@ -33,7 +33,7 @@ services:
       start_period: 1m00s
   caddy:
     # needed for cloudflare dns
-    image: ghcr.io/caddybuilds/caddy-cloudflare:2.10.2
+    image: ghcr.io/caddybuilds/caddy-cloudflare:2.11.1
     user: 1000:1000
     container_name: caddy
     restart: unless-stopped
