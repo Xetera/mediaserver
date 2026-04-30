@@ -138,6 +138,8 @@ services:
       traefik.http.routers.overseerr.rule: Host(`{{ overseerr.domain }}`)
       traefik.http.routers.overseerr.tls: true
       traefik.http.services.overseerr.loadbalancer.server.port: 5055
+      traefik.http.middlewares.overseerr-noindex.headers.customresponseheaders.X-Robots-Tag: noindex
+      traefik.http.routers.overseerr.middlewares: overseerr-noindex@docker
     healthcheck:
       test: wget http://localhost:5055/api/v1/status -qO /dev/null || exit 1
       interval: 10s
