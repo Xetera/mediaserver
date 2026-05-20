@@ -9,8 +9,6 @@ networks:
     external: true
   wizarr:
     external: true
-  tunarr:
-    external: true
   tautulli:
     external: true
 
@@ -220,33 +218,6 @@ services:
     networks:
       arr:
       kometa:
-  tunarr:
-    image: ghcr.io/chrisbenincasa/tunarr:1.0.7
-    container_name: tunarr
-    environment:
-      TZ: "{{ timezone }}"
-      TUNARR_SERVER_PRINT_ROUTES: "true"
-    labels:
-      traefik.enable: true
-      traefik.docker.network: tunarr
-      traefik.http.routers.tunarr.rule: Host(`{{ tunarr.domain }}`)
-      traefik.http.services.tunarr.loadbalancer.server.port: 8000
-      traefik.http.routers.tunarr.tls: true
-      traefik.http.routers.tunarr.middlewares: authelia@docker
-      traefik.udp.routers.tunarr.entrypoints: tunarr
-      traefik.udp.routers.tunarr.service: tunarr
-      traefik.udp.services.tunarr.loadbalancer.server.port: 1900
-    volumes:
-      - /etc/plex/services/tunarr/config:/config/tunarr
-      - /etc/plex/services/.dizquetv:/.dizquetv
-    devices:
-      - /dev/dri:/dev/dri
-    networks:
-      tunarr:
-      plex:
-    restart: unless-stopped
-    healthcheck:
-      test: curl -L http://127.0.0.1:8000/web -o /dev/null || exit 1
   plexautolanguages:
     image: remirigal/plex-auto-languages:v1.2.3
     environment:

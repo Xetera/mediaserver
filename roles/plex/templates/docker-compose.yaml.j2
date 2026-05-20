@@ -14,8 +14,6 @@ networks:
     external: true
   tautulli:
     external: true
-  tunarr:
-    external: true
 
 services:
   traefik:
@@ -40,7 +38,6 @@ services:
       - "--metrics.prometheus.entrypoint=metrics"
       - "--entrypoints.websecure.address=:443"
       - "--entrypoints.websecure.asDefault=true"
-      - "--entrypoints.tunarr.address=:1900/udp"
       - "--providers.file.directory=/etc/traefik/dynamic_config"
       - "--providers.file.watch=true"
     volumes:
@@ -52,7 +49,6 @@ services:
       arr:
       kopia:
       wizarr:
-      tunarr:
       edgeshark:
     extra_hosts:
       - "host.docker.internal:host-gateway"
@@ -66,7 +62,6 @@ services:
     ports:
       - 80:80
       - 443:443
-      - 1900:1900/udp
     healthcheck:
       test: traefik healthcheck --ping
       interval: 10s

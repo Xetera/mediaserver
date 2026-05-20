@@ -65,8 +65,6 @@ plex:
   token: "..."
 netdata:
   domain: "netdata.example.com"
-tunarr:
-  domain: "tv.example.com"
 # plex specific configuration
 # optional
 authelia:
