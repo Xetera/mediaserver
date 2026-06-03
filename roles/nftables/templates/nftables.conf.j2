@@ -7,6 +7,10 @@ table inet custom_nat
 table ip custom_nat
 flush table inet custom_nat
 flush table ip custom_nat
+{% if nat.dnat_ipv6 is defined %}
+table ip6 custom_nat
+flush table ip6 custom_nat
+{% endif %}
 {% endif %}
 
 table inet firewall {
@@ -55,4 +59,15 @@ table ip custom_nat {
 {% endfor %}
   }
 }
+
+{% if nat.dnat_ipv6 is defined %}
+table ip6 custom_nat {
+  chain prerouting {
+    type nat hook prerouting priority dstnat; policy accept;
+{% for source in nat.dnat_ipv6 %}
+    iifname "{{ source.interface }}" {{ source.protocol }} dport { {{ source.dport | join(', ') }} } dnat to {{ source.destination }}
+{% endfor %}
+  }
+}
+{% endif %}
 {% endif %}

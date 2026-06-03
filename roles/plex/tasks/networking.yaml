@@ -19,5 +19,7 @@
   community.docker.docker_network:
     name: proxy
     driver: bridge
+    enable_ipv6: true
     ipam_config:
       - subnet: 10.8.0.0/24
+      - subnet: fd00:0:0:2::/64

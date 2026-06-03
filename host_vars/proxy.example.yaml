@@ -1,4 +1,6 @@
 unprivileged_user: proxy
+timezone: "Europe/Berlin"
+
 ssh:
   user_name: proxy
   host_name: plex-proxy
@@ -6,12 +8,14 @@ ssh:
 wireguard:
   port: 51820
   subnet: "10.0.0.1/24"
+  subnet_ipv6: "fd00:0:0:1::1/64"
   private_key: "change-me"
   # plex
   target:
     address: "10.0.0.2"
+    address_ipv6: "fd00:0:0:1::2"
     public_key: "change-me"
-    allowed_ips: "10.0.0.2/24"
+    allowed_ips: "10.0.0.2/32, fd00:0:0:1::2/128"
     endpoint: "plex-ip"
     port: 51820
     persistent_keepalive: 25

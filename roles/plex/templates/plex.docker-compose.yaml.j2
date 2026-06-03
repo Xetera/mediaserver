@@ -53,6 +53,7 @@ services:
     networks:
       proxy:
         ipv4_address: 10.8.0.3
+        ipv6_address: fd00:0:0:2::3
     healthcheck:
       test: wget -q -O - "http://127.0.0.1:2019/reverse_proxy/upstreams" || exit 1
       interval: 10s
@@ -72,10 +73,12 @@ services:
       kometa:
       proxy:
         ipv4_address: 10.8.0.2
+        ipv6_address: fd00:0:0:2::2
     cap_add:
       - NET_ADMIN
     sysctls:
       - net.ipv4.conf.all.src_valid_mark=1
+      - net.ipv6.conf.all.forwarding=1
     ports:
       - 51820:51820/udp
     volumes:

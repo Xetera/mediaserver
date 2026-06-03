@@ -7,13 +7,14 @@ ssh:
 wireguard:
   port: 51820
   subnet: "10.0.0.2/24"
+  subnet_ipv6: "fd00:0:0:1::2/64"
   private_key: "change-me"
   # proxy
   target:
     address: "10.0.0.1"
     public_key: "change-me"
     # proxy everything
-    allowed_ips: "0.0.0.0/0"
+    allowed_ips: "0.0.0.0/0, ::/0"
     endpoint: "proxy-ip"
     port: 51820
     persistent_keepalive: 25
