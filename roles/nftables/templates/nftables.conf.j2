@@ -37,6 +37,9 @@ table inet firewall {
     icmp type echo-request counter accept
     ct state established,related accept
     tcp dport { {{ nftables.whitelisted_ports | join(', ') }} } counter accept
+{% if 'whitelisted_ports_udp' in nftables %}
+    udp dport { {{ nftables.whitelisted_ports_udp | join(', ') }} } counter accept
+{% endif %}
     reject
   }
 }
