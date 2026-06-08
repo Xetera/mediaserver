@@ -91,7 +91,7 @@ services:
       traefik.http.middlewares.authelia.forwardAuth.trustForwardHeader: "true"
       traefik.http.middlewares.authelia.forwardAuth.authResponseHeaders: "Remote-User,Remote-Groups,Remote-Email,Remote-Name"
   kopia:
-    image: kopia/kopia:0.22
+    image: kopia/kopia:0.23
     container_name: "kopia"
     restart: unless-stopped
     environment:
